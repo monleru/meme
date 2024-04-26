@@ -1,0 +1,18 @@
+{
+  "name": "meme.fun",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "chalk": "^5.3.0",
+    "form-data": "^4.0.0",
+    "socks-proxy-agent": "^8.0.3"
+  }
+}
