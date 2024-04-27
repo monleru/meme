@@ -24,7 +24,15 @@ const getPoints = async (axios_:AxiosInstance,acc:string) => {
     const data = await axios_.get("user/me")
     log(chalk.blue(acc + ":"), "points -",data.data.stats.points)
     log(chalk.blue(acc + ":"), "Is bot -",data.data.isBotUser)
+}
 
+const spin = async (axios_:AxiosInstance,acc:string) => {
+    const response = await axios_.get("points/0x5c375b8eb20f9414cb3ff47a1bf21bc2062282f96c5a02f182f0c5aecc22cc02/wheel")
+    log(chalk.blue(acc + ":"), "spin available:",response.data.eligible)
+    if(response.data.eligible) {
+        const response = await axios_.post("points/0x5c375b8eb20f9414cb3ff47a1bf21bc2062282f96c5a02f182f0c5aecc22cc02/wheel/spin",{})
+        log(chalk.blue(acc + ":"), "win points:",response.data.finalPointsWon)
+    }
 }
 
 const refreshToken = async (axios_:AxiosInstance, acc:string) => {
@@ -119,22 +127,22 @@ export async function post(acc:string) {
     axios_.defaults.headers.common['X-Privy-Token'] =  await refreshToken(axios_,acc)
 
     const url = '/ticker/0x5c375b8eb20f9414cb3ff47a1bf21bc2062282f96c5a02f182f0c5aecc22cc02/post';
+    fs.promises.unlink(path_)
     await axios_.post(url, formData, {
         headers: {
         ...formData.getHeaders()
     },
     });
-    fs.promises.unlink(path_)
     log(chalk.blue(acc + ":"), "posted meme")
     await likePosts(axios_, acc)
+    await spin(axios_,acc)
     await getPoints(axios_, acc)
-
 }
 const start = async () => {
     const accs = Object.keys(JSON.parse(fs.readFileSync("tokens.json", 'utf-8')))
     while(true) {
         for (const acc of accs) {
-            await post(acc)
+            await post(acc).catch(e => console.log(e))
             await sleep(10,20)
         }
     }
